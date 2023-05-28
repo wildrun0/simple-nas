@@ -1,0 +1,33 @@
+{
+	"name": "simple-nas",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@types/node": "20.1.2",
+		"@types/react": "18.2.6",
+		"@types/react-dom": "18.2.4",
+		"chroma-js": "^2.4.2",
+		"cookies-next": "^2.1.1",
+		"eslint": "8.40.0",
+		"eslint-config-next": "13.4.1",
+		"eventsource": "^2.0.2",
+		"next": "13.4.1",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"react-icons": "^4.8.0",
+		"recharts": "^2.6.2",
+		"swr": "^2.1.5",
+		"systeminformation": "^5.17.12",
+		"typescript": "5.0.4"
+	},
+	"devDependencies": {
+		"@types/chroma-js": "^2.4.0",
+		"@types/eventsource": "^1.1.11"
+	}
+}
