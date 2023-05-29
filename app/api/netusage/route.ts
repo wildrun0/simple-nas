@@ -1,4 +1,5 @@
 import EventSource from "eventsource";
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
 	let responseStream = new TransformStream();

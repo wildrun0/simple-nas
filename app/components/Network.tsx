@@ -56,9 +56,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 		const resp = new EventSource("http://localhost:3000/api/netusage");
 		resp.onmessage = (e) => {
 			let data = JSON.parse(e.data)
-			console.log(typeof data, data)
 			data.map((_entry: NetworkFlow_Extended) => {
-				console.log(_entry, netinfo)
 				if (_entry.iface === netinfo.iface) {
 					set_down(_entry.total_download);
 					set_sent(_entry.total_upload);
@@ -96,11 +94,11 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 					{total_downloaded && total_sent && (
 						<>
 							<div className='network-stat'>
-								<AiOutlineCloudUpload/>
+								<AiOutlineCloudUpload />
 								<p>{formatBytes(total_sent)}</p>
 							</div>
 							<div className='network-stat'>
-								<AiOutlineCloudDownload/>
+								<AiOutlineCloudDownload />
 								<p>{formatBytes(total_downloaded)}</p>
 							</div>
 						</>
