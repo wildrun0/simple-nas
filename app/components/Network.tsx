@@ -53,7 +53,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 	const [total_sent, set_sent] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
-		const resp = new EventSource("http://localhost:3000/api/netusage");
+		const resp = new EventSource(`${window.location.href}/api/netusage`);
 		resp.onmessage = (e) => {
 			let data = JSON.parse(e.data)
 			data.map((_entry: NetworkFlow_Extended) => {

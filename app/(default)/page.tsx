@@ -73,7 +73,7 @@ export default function Home() {
 						<h6>{pc_data.os_sub}</h6>
 					</li>
 					<li key={2}>
-						<h5>System</h5>
+						<h5>Hardware (SoC or CPU)</h5>
 						<p>{pc_data.cpu}</p>
 					</li>
 					<li key={3}>
