@@ -73,7 +73,7 @@ export default function Home() {
 						<h6>{pc_data.os_sub}</h6>
 					</li>
 					<li key={2}>
-						<h5>Processor</h5>
+						<h5>System</h5>
 						<p>{pc_data.cpu}</p>
 					</li>
 					<li key={3}>
@@ -82,7 +82,7 @@ export default function Home() {
 					</li>
 					<li key={4}>
 						<h5>Hostname</h5>
-						<p>{pc_data.hostname || "Not set"}</p>
+						<p>{pc_data.hostname}</p>
 					</li>
 					<li key={5}>
 						<h5>IP address</h5>
@@ -145,7 +145,7 @@ export default function Home() {
 									return (
 										<>
 											<h3>{_entry.iface}</h3>
-											<NetworkActivity url={"http://localhost:3333/api/netusage"} netinfo={_entry} />
+											<NetworkActivity netinfo={_entry} period={40} />
 										</>
 									)
 								}

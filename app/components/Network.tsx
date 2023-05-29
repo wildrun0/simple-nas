@@ -25,7 +25,7 @@ interface NetworkFlow_Extended {
 
 interface NA_props {
 	netinfo: NetworkInfo,
-	url: string
+	period: number
 }
 
 const formatBytes = (bytes: number, decimals: number = 2, bits: boolean = false) => {
@@ -47,20 +47,22 @@ const formatBytes = (bytes: number, decimals: number = 2, bits: boolean = false)
 	const i: number = Math.floor(Math.log(bytes) / Math.log(k));
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
-const NetworkActivity = ({ netinfo, url }: NA_props) => {
+const NetworkActivity = ({ netinfo, period }: NA_props) => {
 	const [net_stat, add_net_stat] = useState<NetworkFlow_Extended[]>([]);
 	const [total_downloaded, set_down] = useState<number | undefined>(undefined);
 	const [total_sent, set_sent] = useState<number | undefined>(undefined);
+
 	useEffect(() => {
-		const resp = new EventSource(url);
+		const resp = new EventSource("http://localhost:3000/api/netusage");
 		resp.onmessage = (e) => {
 			let data = JSON.parse(e.data)
+			console.log(typeof data, data)
 			data.map((_entry: NetworkFlow_Extended) => {
 				console.log(_entry, netinfo)
 				if (_entry.iface === netinfo.iface) {
 					set_down(_entry.total_download);
 					set_sent(_entry.total_upload);
-					add_net_stat(result => [...result.slice(-40), {
+					add_net_stat(result => [...result.slice(-period), {
 						up: _entry.up,
 						down: _entry.down
 					}]);
@@ -71,7 +73,7 @@ const NetworkActivity = ({ netinfo, url }: NA_props) => {
 		return () => {
 			resp.close();
 		}
-	}, [netinfo, url])
+	}, [netinfo])
 	return (
 		<>
 			<div className="network">
