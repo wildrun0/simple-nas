@@ -73,7 +73,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 		return () => {
 			resp.close();
 		}
-	}, [netinfo])
+	}, [netinfo, period])
 	return (
 		<>
 			<div className="network">

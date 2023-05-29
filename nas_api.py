@@ -190,4 +190,4 @@ for route in list(app.router.routes()):
     cors.add(route)
 
 if __name__ == '__main__':
-    web.run_app(app, port=3333)
+    web.run_app(app, host='localhost', port=3333)
