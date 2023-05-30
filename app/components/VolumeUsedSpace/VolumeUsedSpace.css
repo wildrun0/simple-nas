@@ -1,0 +1,28 @@
+.disk-usage {
+	color: rgba(219, 219, 219, 0.5);
+	font-weight: 100;
+	font-size: 15px;
+}
+
+.disk-info {
+	margin-left: 80px;
+	margin-right: 80px;
+	gap: 5px;
+	display: grid;
+	align-items: center;
+	font-size: 24px;
+	margin-bottom: 50px;
+}
+
+.disk-info>div {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+@media screen and (max-width: 2015px) {
+	.dashboard-disks-usage {
+		width: 100%;
+		margin-top: 50px;
+	}
+}

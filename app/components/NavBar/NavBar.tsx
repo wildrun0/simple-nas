@@ -1,12 +1,10 @@
-"use client";
-
-import Link from "next/link";
+import "./NavBar.css";
 import { HiUsers, HiInformationCircle } from "react-icons/hi";
 import { ImDrive, ImBlocked } from "react-icons/im";
 import { TbHeartRateMonitor } from "react-icons/tb";
 import { AiFillFileText, AiFillDashboard } from "react-icons/ai";
-import "./NavBar.css";
-import logo from "../logo.svg"
+import Link from "next/link";
+import logo from "../../logo.svg"
 import Image from "next/image";
 
 

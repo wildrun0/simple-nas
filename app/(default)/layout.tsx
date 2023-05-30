@@ -1,6 +1,6 @@
-import NavBar from '../components/NavBar'
-import { Poppins } from 'next/font/google'
 import '../globals.css'
+import NavBar from '../components/NavBar/NavBar'
+import { Poppins } from 'next/font/google'
 
 export const metadata = {
 	title: 'S-NAS home',

@@ -1,3 +1,4 @@
+"use client"
 import "./Network.css"
 import EventSource from 'eventsource';
 
@@ -12,8 +13,7 @@ import {
 } from 'react-icons/ai';
 
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { NetworkInfo } from "../api/network/route";
-
+import { NetworkInfo } from "../SystemInfo/SystemInfo";
 
 interface NetworkFlow_Extended {
 	iface?: string,
@@ -53,7 +53,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 	const [total_sent, set_sent] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
-		const resp = new EventSource(`${window.location.href}/api/netusage`);
+		const resp = new EventSource(`http://localhost:3333/api/netusage`);
 		resp.onmessage = (e) => {
 			let data = JSON.parse(e.data)
 			data.map((_entry: NetworkFlow_Extended) => {
@@ -69,6 +69,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 		}
 		resp.onerror = () => { resp.close() }
 		return () => {
+			console.log("CLOSED")
 			resp.close();
 		}
 	}, [netinfo, period])

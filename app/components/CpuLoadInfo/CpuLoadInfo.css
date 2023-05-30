@@ -1,0 +1,20 @@
+.dashboard-cpu {
+	text-align: center;
+	background-color: #262B49;
+	height: 250px;
+}
+
+.dashboard-cpu h2 {
+	margin-top: 15px;
+	text-align: center;
+	font-weight: 100;
+}
+
+.dashboard-cpu-info {
+	margin: 18px;
+	height: 150px;
+}
+
+.dashboard-cpu .cpu-since {
+	color: rgba(128, 128, 128, 0.212);
+}

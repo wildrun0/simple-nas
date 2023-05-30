@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 	const isAuth: AuthData = await res.json();
 	const resp = NextResponse.json(isAuth);
 	if (isAuth.auth === true && isAuth.jwt) {
-		resp.cookies.set("jwt", isAuth.jwt, { maxAge: 21600, sameSite: "none", secure: true });
+		resp.cookies.set("jwt", isAuth.jwt, { maxAge: 21600 });
 	}
-	return resp
+	return resp;
 }

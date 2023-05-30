@@ -1,14 +1,14 @@
 "use client"
 import "./auth.css"
-import Image from "next/image";
 import logo from "../../logo.svg"
+import Image from "next/image";
 
+import { Poppins } from 'next/font/google'
 import { useRouter } from 'next/navigation';
 import { FaUserAlt } from "react-icons/fa";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { Poppins } from 'next/font/google'
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { useState } from "react";
+import { RiLockPasswordFill } from "react-icons/ri";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 
 const poppins = Poppins({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] });
 

@@ -1,5 +1,6 @@
-import time
 from aiohttp_sse import sse_response
+from loguru import logger
+
 import aiohttp_cors
 import psutil as ps
 import asyncio
@@ -25,7 +26,7 @@ if (cur.execute("SELECT name FROM sqlite_master WHERE name='users'")).fetchone()
             ('admin', 'admin')
     """)
     con.commit()
-    print("users.db not found. Creating new database...")
+    logger.info("users.db not found. Creating new database...")
 
 
 def gen_secure_key(N: int = 10):
@@ -73,6 +74,7 @@ async def sysinfo(req):
         hostname = "bebra"
         kernel_ver = " bebbf bsfsdf sdfsfds sdfsdf"
         os_name = {"PRETTY_NAME": '"WINDOWS 12"'}
+    logger.debug("sysinfo sent")
     return web.json_response({
         "cpu": cpu_name,
         "ram": f'{int(ram["MemTotal"].replace(" kB", ""))/(1024 * 1024):.2f} GiB',
@@ -101,6 +103,7 @@ async def network(req):
     else:
         ip_addresses = [{"iface": "Ethernet", "ip": "192.168.1.102", "primary": True, "up_status": "UP"}, {
             "iface": "wlan0", "ip": "192.168.0.102", "primary": False, "up_status": "DOWN"}]
+    logger.debug("network info sent")
     return web.json_response(ip_addresses)
 
 
@@ -118,6 +121,7 @@ async def disks(req):
             {"name": "/dev/sdd", "size": 11101010101, "used": 111017010, "use": 53.5})
         drives_usage.append(
             {"name": "/dev/sdb", "size": 11101010101, "used": 999017010, "use": 53.5})
+    logger.debug("disks info sent")
     return web.json_response(drives_usage)
 
 
@@ -132,22 +136,27 @@ async def cpu_data(req):
             50, 99), "load": random.randint(0, 100)})
         new_dt = timedelta(minutes=30)
         naive_dt = naive_dt + new_dt
+    logger.debug("cpu data sent")
     return web.json_response(data)
 
 
 async def auth(req):
     data: dict[str, str] = await req.json()
+    logger.debug("Perfoming authentication")
     for username, password in cur.execute("SELECT name, password FROM users"):
         if list(data.values()) == [username, password]:
             jwt_key = gen_secure_key()
             trusted_keys.append(jwt_key)
+            logger.debug(f"Auth successful for '{username}'")
             return web.json_response({"auth": True, "jwt": jwt_key})
+    logger.debug("Attempt to auth failed")
     return web.json_response({"auth": False})
 
 
 async def net_usage(request):
     io = ps.net_io_counters(pernic=True)
     async with sse_response(request) as resp:
+        logger.debug("SSE started")
         while True:
             await asyncio.sleep(1)
             io_2 = ps.net_io_counters(pernic=True)
@@ -160,11 +169,15 @@ async def net_usage(request):
                     "iface": iface,
                     "total_download": io_2[iface].bytes_recv,
                     "total_upload": io_2[iface].bytes_sent,
-                    "up": upload_speed / 1,
-                    "down": download_speed / 1,
+                    "up": upload_speed,
+                    "down": download_speed,
                 })
             io = io_2
-            await resp.send(json.dumps(data))
+            try:
+                await resp.send(json.dumps(data))
+            except ConnectionResetError:
+                logger.debug("Connection reset in SSE")
+                break
     return resp
 
 

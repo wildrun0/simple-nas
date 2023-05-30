@@ -1,0 +1,21 @@
+.dashboard-net {
+	background-color: #262B49;
+	display: flex;
+	flex-direction: column;
+}
+
+.dashboard-net h2 {
+	margin-top: 15px;
+	text-align: center;
+	font-weight: 100;
+}
+
+.net-data {
+	margin: 22px;
+}
+
+.net-data>h3 {
+	font-size: 28px;
+	color: rgb(138, 137, 227);
+	margin-bottom: 12px;
+}
