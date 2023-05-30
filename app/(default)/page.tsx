@@ -46,7 +46,7 @@ export default async function Home() {
 	// const onPieEnter = (_: any, index: number) => {
 	// 	setActiveIndex(index);
 	// }
-	const pc_data = await fetch("http://localhost:3333/api/sysinfo").then((res) => res.json());
+	const pc_data = await fetch("http://localhost:3333/api/sysinfo", { cache: "no-store" } ).then((res) => res.json());
 	const cpu_data = await fetch("http://localhost:3333/api/cpudata", { cache: "no-store" }).then((res) => res.json());
 	const volume_data = await fetch("http://localhost:3333/api/disksinfo", { cache: "no-store" }).then((res) => res.json());
 	const network_info = await fetch("http://localhost:3333/api/network", { cache: "no-store" }).then((res) => res.json());
