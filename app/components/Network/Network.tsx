@@ -69,7 +69,7 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 		}
 		resp.onerror = () => { resp.close() }
 		return () => {
-			console.log("CLOSED")
+			console.log("CLOSED");
 			resp.close();
 		}
 	}, [netinfo, period])

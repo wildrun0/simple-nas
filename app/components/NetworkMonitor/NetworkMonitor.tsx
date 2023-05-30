@@ -1,17 +1,9 @@
 
 import "./NetworkMonitor.css";
-import { NetworkInfo } from "../SystemInfo/SystemInfo";
 import NetworkActivity from "../Network/Network";
-import EventSource from "eventsource";
-export const dynamic = 'force-dynamic'
+import { NetworkInfo } from "../SystemInfo/SystemInfo";
 
-interface NetworkFlow_Extended {
-	iface?: string,
-	total_download?: number,
-	total_upload?: number,
-	up: number,
-	down: number
-}
+
 const NetworkMonitor = ({ network_info }: { network_info: NetworkInfo[] }) => {
 	return (
 		<div className='dashboard-net'>
