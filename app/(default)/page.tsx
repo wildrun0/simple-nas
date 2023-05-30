@@ -50,7 +50,7 @@ export default async function Home() {
 	const cpu_data = await fetch("http://localhost:3333/api/cpudata", { cache: "no-store" }).then((res) => res.json());
 	const volume_data = await fetch("http://localhost:3333/api/disksinfo", { cache: "no-store" }).then((res) => res.json());
 	const network_info = await fetch("http://localhost:3333/api/network", { cache: "no-store" }).then((res) => res.json());
-	console.log(1)
+	console.log("RENDER")
 	return (
 		<div className='dashboard-main'>
 			<SystemInfo pc_data={pc_data} network_info={network_info} />

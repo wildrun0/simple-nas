@@ -2,8 +2,9 @@ from aiohttp import web
 from aiohttp.web import BaseRequest
 from aiohttp.web_app import Application
 from aiohttp_sse import sse_response
-
 from loguru import logger
+from _getip import get_local_ip
+
 import aiohttp_cors
 import psutil as ps
 import asyncio
@@ -162,7 +163,6 @@ async def net_usage(req: BaseRequest):
         async with sse_response(req) as resp:
             logger.debug("SSE started")
             while True:
-                print(1)
                 await asyncio.sleep(1)
                 io_2 = ps.net_io_counters(pernic=True)
                 data = []
@@ -198,11 +198,11 @@ net_api.add_routes([
     web.get("/api/netusage", net_usage)
 ])
 
-async def start_site(app: Application, address: str = 'localhost', port: int = 8080):
+async def start_site(app: Application, host: str = 'localhost', port: int = 8080):
     runner = web.AppRunner(app)
     runners.append(runner)
     await runner.setup()
-    site = web.TCPSite(runner, address, port)
+    site = web.TCPSite(runner, host, port)
     await site.start()
 
 cors = aiohttp_cors.setup(net_api, defaults={
@@ -216,8 +216,8 @@ cors = aiohttp_cors.setup(net_api, defaults={
 for route in list(net_api.router.routes()):
     cors.add(route)
 
-loop.create_task(start_site(app, address='localhost', port=3333))
-loop.create_task(start_site(net_api, port=2222))
+loop.create_task(start_site(app, port=3333))
+loop.create_task(start_site(net_api, host=get_local_ip(), port=2222))
 
 if __name__ == '__main__':
     logger.info(f"Starting runners")

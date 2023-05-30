@@ -43,9 +43,9 @@ const SystemInfo = ({ pc_data, network_info }: { pc_data: pc_info, network_info:
 					{network_info.map((_entry: NetworkInfo, _index: number) => (
 						<div key={_index}>
 							<p {..._entry.primary && { className: "primary-conn" }}>{_entry["iface"]}: {_entry["ip"]} {_entry.primary && <AiFillCheckCircle color='#358fff' />}</p>
-							<div className='tooltip'>
+							{_entry.primary && (<div className='tooltip'>
 								This is your primary IP address.
-							</div>
+							</div>)}
 						</div>
 					))}
 				</li>
