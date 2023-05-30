@@ -12,16 +12,23 @@
 }
 
 .tooltip {
-	display: none;
-	background-color: #6d6bcf;
+	/* display: none; */
 	padding: 15px;
-	position: absolute;
-	border-radius: 25px;
 	font-size: 14px;
+	border-radius: 25px;
+	position: absolute;
+	background-color: #6d6bcf;
+	opacity: 0;
+	transition: all 1s;
+}
+
+.primary-conn {
+	width: fit-content;
 }
 
 .primary-conn:hover + .tooltip {
 	display: block;
+	opacity: 1;
 }
 
 .system-info-label {

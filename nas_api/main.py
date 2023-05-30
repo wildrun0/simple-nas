@@ -1,6 +1,9 @@
+from aiohttp import web
+from aiohttp.web import BaseRequest
+from aiohttp.web_app import Application
 from aiohttp_sse import sse_response
-from loguru import logger
 
+from loguru import logger
 import aiohttp_cors
 import psutil as ps
 import asyncio
@@ -11,11 +14,10 @@ import sqlite3
 import string
 import secrets
 
-
-from aiohttp import web
-
+loop = asyncio.get_event_loop()
 os_type = platform.system()
 trusted_keys = []
+runners: list[Application] = []
 
 con = sqlite3.connect("users.db")
 cur = con.cursor()
@@ -31,6 +33,7 @@ if (cur.execute("SELECT name FROM sqlite_master WHERE name='users'")).fetchone()
 
 def gen_secure_key(N: int = 10):
     return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+
 
 async def run(cmd: str) -> str:
     proc = await asyncio.create_subprocess_shell(
@@ -57,7 +60,7 @@ async def parse_proc(cmd: str, divider: str = ":") -> dict:
     return dict_proc
 
 
-async def sysinfo(req):
+async def sysinfo(req: BaseRequest):
     if os_type != "Windows":
         cpu = await parse_proc("/proc/cpuinfo")
         ram = await parse_proc("/proc/meminfo")
@@ -84,7 +87,7 @@ async def sysinfo(req):
     })
 
 
-async def network(req):
+async def network(req: BaseRequest):
     if os_type != "Windows":
         ipaddr = await run("ip -br -4 a sh")
         interfaces_splitted = [s for s in ipaddr.split("\n") if not s == ""]
@@ -107,7 +110,7 @@ async def network(req):
     return web.json_response(ip_addresses)
 
 
-async def disks(req):
+async def disks(req: BaseRequest):
     drives_usage = []
     if os_type != "Windows":
         drives = [i for i in ps.disk_partitions(
@@ -125,7 +128,7 @@ async def disks(req):
     return web.json_response(drives_usage)
 
 
-async def cpu_data(req):
+async def cpu_data(req: BaseRequest):
     # data = [{ "time": string, "temp": number, "load": number }];
     data = []
     import random
@@ -140,7 +143,7 @@ async def cpu_data(req):
     return web.json_response(data)
 
 
-async def auth(req):
+async def auth(req: BaseRequest):
     data: dict[str, str] = await req.json()
     logger.debug("Perfoming authentication")
     for username, password in cur.execute("SELECT name, password FROM users"):
@@ -153,45 +156,56 @@ async def auth(req):
     return web.json_response({"auth": False})
 
 
-async def net_usage(request):
+async def net_usage(req: BaseRequest):
     io = ps.net_io_counters(pernic=True)
-    async with sse_response(request) as resp:
-        logger.debug("SSE started")
-        while True:
-            await asyncio.sleep(1)
-            io_2 = ps.net_io_counters(pernic=True)
-            data = []
-            for iface, iface_io in io.items():
-                upload_speed, download_speed = io_2[iface].bytes_sent - \
-                    iface_io.bytes_sent, io_2[iface].bytes_recv - \
-                    iface_io.bytes_recv
-                data.append({
-                    "iface": iface,
-                    "total_download": io_2[iface].bytes_recv,
-                    "total_upload": io_2[iface].bytes_sent,
-                    "up": upload_speed,
-                    "down": download_speed,
-                })
-            io = io_2
-            try:
+    try:
+        async with sse_response(req) as resp:
+            logger.debug("SSE started")
+            while True:
+                print(1)
+                await asyncio.sleep(1)
+                io_2 = ps.net_io_counters(pernic=True)
+                data = []
+                for iface, iface_io in io.items():
+                    upload_speed, download_speed = io_2[iface].bytes_sent - \
+                        iface_io.bytes_sent, io_2[iface].bytes_recv - \
+                        iface_io.bytes_recv
+                    data.append({
+                        "iface": iface,
+                        "total_download": io_2[iface].bytes_recv,
+                        "total_upload": io_2[iface].bytes_sent,
+                        "up": upload_speed,
+                        "down": download_speed,
+                    })
+                io = io_2
                 await resp.send(json.dumps(data))
-            except ConnectionResetError:
-                logger.debug("Connection reset in SSE")
-                break
+    except:
+        logger.info(f"{req.remote} disconnected from SSE")
     return resp
 
 
 app = web.Application()
 app.add_routes([
+    web.post("/api/auth", auth),
     web.get('/api/sysinfo', sysinfo),
     web.get('/api/network', network),
     web.get("/api/disksinfo", disks),
-    web.get("/api/cpudata", cpu_data),
-    web.post("/api/auth", auth),
+    web.get("/api/cpudata", cpu_data)
+])
+
+net_api = web.Application()
+net_api.add_routes([
     web.get("/api/netusage", net_usage)
 ])
 
-cors = aiohttp_cors.setup(app, defaults={
+async def start_site(app: Application, address: str = 'localhost', port: int = 8080):
+    runner = web.AppRunner(app)
+    runners.append(runner)
+    await runner.setup()
+    site = web.TCPSite(runner, address, port)
+    await site.start()
+
+cors = aiohttp_cors.setup(net_api, defaults={
     "*": aiohttp_cors.ResourceOptions(
         allow_credentials=True,
         expose_headers="*",
@@ -199,8 +213,18 @@ cors = aiohttp_cors.setup(app, defaults={
     )
 })
 
-for route in list(app.router.routes()):
+for route in list(net_api.router.routes()):
     cors.add(route)
 
+loop.create_task(start_site(app, address='localhost', port=3333))
+loop.create_task(start_site(net_api, port=2222))
+
 if __name__ == '__main__':
-    web.run_app(app, host='localhost', port=3333)
+    logger.info(f"Starting runners")
+    try:
+        loop.run_forever()
+    except:
+        pass
+    finally:
+        for runner in runners:
+            loop.run_until_complete(runner.cleanup())

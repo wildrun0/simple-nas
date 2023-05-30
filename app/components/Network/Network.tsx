@@ -12,7 +12,7 @@ import {
 	AiOutlineCloudUpload
 } from 'react-icons/ai';
 
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { NetworkInfo } from "../SystemInfo/SystemInfo";
 
 interface NetworkFlow_Extended {
@@ -53,9 +53,9 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 	const [total_sent, set_sent] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
-		const resp = new EventSource(`http://localhost:3333/api/netusage`);
+		const resp = new EventSource(`${process.env.NEXT_PUBLIC_NET_API}/api/netusage`);
 		resp.onmessage = (e) => {
-			let data = JSON.parse(e.data)
+			let data = JSON.parse(e.data);
 			data.map((_entry: NetworkFlow_Extended) => {
 				if (_entry.iface === netinfo.iface) {
 					set_down(_entry.total_download);
@@ -107,19 +107,21 @@ const NetworkActivity = ({ netinfo, period }: NA_props) => {
 				</div>
 			</div>
 			{net_stat && (
-				<LineChart width={600} height={250} data={net_stat} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-					<Line dot={false} isAnimationActive={false} type="monotone" dataKey="up" stroke="lightgreen" />
-					<Line dot={false} isAnimationActive={false} type="monotone" dataKey="down" stroke="red" />
-					<CartesianGrid stroke="#ccc" strokeDasharray="3 3" opacity={0.35} vertical={false} />
-					<XAxis dataKey="timestamp" />
-					<Tooltip contentStyle={{ backgroundColor: "#1c2137", border: "none" }} formatter={(e: string) => `${formatBytes(Number(e) * 8, 2, true)}`} />
-					<YAxis
-						tick={{ fontSize: "14px" }}
-						tickMargin={5}
-						width={75}
-						tickFormatter={(e: string) => `${formatBytes(Number(e) * 8, 2, true)}`}
-					/>
-				</LineChart>
+				<ResponsiveContainer width='100%' height={250}>
+					<LineChart data={net_stat} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+						<Line dot={false} isAnimationActive={false} type="monotone" dataKey="up" stroke="lightgreen" />
+						<Line dot={false} isAnimationActive={false} type="monotone" dataKey="down" stroke="red" />
+						<CartesianGrid stroke="#ccc" strokeDasharray="3 3" opacity={0.35} vertical={false} />
+						<XAxis dataKey="timestamp" />
+						<Tooltip contentStyle={{ backgroundColor: "#1c2137", border: "none" }} formatter={(e: string) => `${formatBytes(Number(e) * 8, 2, true)}`} />
+						<YAxis
+							tick={{ fontSize: "14px" }}
+							tickMargin={5}
+							width={75}
+							tickFormatter={(e: string) => `${formatBytes(Number(e) * 8, 2, true)}`}
+						/>
+					</LineChart>
+				</ResponsiveContainer>
 			)}
 		</>
 	)
