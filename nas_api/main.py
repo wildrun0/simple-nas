@@ -5,11 +5,11 @@ from aiohttp_sse import sse_response
 from loguru import logger
 from _getip import get_local_ip
 
-import time
 import aiohttp_cors
 import psutil as ps
 import asyncio
 import platform
+import time
 import jwt
 import json
 import sqlite3
@@ -141,27 +141,36 @@ async def disks(req: BaseRequest):
 
 
 async def scan_cpu_load():
-    while 1:
-        cpu_usage = await run("echo \"$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]\"")
-        cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
-        data = {
-            "time": round(time.time()),
-            "temp": cpu_temp,
-            "usage": cpu_usage
-        }
-        with open("cpu_stat.txt", "a") as f:
-            f.write(json.dumps(data))
-        asyncio.sleep(600)
+    if os_type != "Windows":
+        while 1:
+            cpu_usage = ps.cpu_percent()
+            cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
+            data = {
+                "time": round(time.time()),
+                "temp": round(cpu_temp, 1),
+                "usage": cpu_usage
+            }
+            with open("cpu_stat.txt", "r+") as f:
+                cpu_info = json.loads(f.read())
+                cpu_info.append(data)
+                f.seek(0)
+                f.truncate(0)
+                f.write(json.dumps(cpu_info))
+            await asyncio.sleep(300)
 
 
 async def cpu_data(req: BaseRequest):
-    if os_type != "Windows":
-        cpu_usage = await run(""" echo "$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]" """)
-        cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
-    else:
-        cpu_usage = 47
-        cpu_temp = 55
-    return web.json_response({"temp": cpu_temp, "usage": cpu_usage})
+    cpu_info = []
+    CHECK_ENTRIES = 25
+    with open("cpu_stat.txt", "r+") as f:
+        cpu_info = json.loads(f.read())
+        if os_type != "Windows":
+            if len(cpu_info) > CHECK_ENTRIES:
+                cpu_info = cpu_info[-CHECK_ENTRIES:]
+                f.seek(0)
+                f.truncate(0)
+                f.write(json.dumps(cpu_info))
+    return web.json_response(cpu_info)
 
 
 async def auth(req: BaseRequest):

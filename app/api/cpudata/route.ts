@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export interface cpu_data {
 	time: string;
 	temp: number;
-	load: number;
+	usage: number;
 }
 
 export async function GET(req: Request) {

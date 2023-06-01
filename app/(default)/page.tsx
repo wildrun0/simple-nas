@@ -18,10 +18,10 @@ export default async function Home() {
 		<div className='dashboard-main'>
 			<div className='pcdata-ram'>
 				<SystemInfo pc_data={pc_data} network_info={network_info} />
-				<RamInfo />
+				{/* <RamInfo /> */}
 			</div>
 			<div className='dashboard-pc'>
-				<CpuLoadInfo period={60} />
+				<CpuLoadInfo />
 				<NetworkMonitor network_info={network_info} period={45} />
 			</div>
 			<div className='dashboard-disks'>
