@@ -1,0 +1,18 @@
+.ram-usage {
+	background-color: #262B49;
+}
+
+.ram-usage h2 {
+	margin-top: 15px;
+	text-align: center;
+	font-weight: 100;
+}
+
+.ram-usage-info {
+	display: flex;
+	flex-direction: row;
+}
+
+.ram-usage-info:last-child {
+	flex: 1;
+}

@@ -32,6 +32,14 @@ if (cur.execute("SELECT name FROM sqlite_master WHERE name='users'")).fetchone()
     logger.info("users.db not found. Creating new database...")
 
 
+async def start_site(app: Application, host: str = 'localhost', port: int = 8080):
+    runner = web.AppRunner(app)
+    runners.append(runner)
+    await runner.setup()
+    site = web.TCPSite(runner, host, port)
+    await site.start()
+
+
 def gen_secure_key(N: int = 10):
     return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
@@ -97,6 +105,7 @@ async def network(req: BaseRequest):
         for iface_line in interfaces_splitted:
             iface_data = [s for s in iface_line.split(" ") if not s == ""]
             adapter, is_up, ip = iface_data
+            if adapter == 'lo': continue
             ip = ip.split("/")[0]
             ip_addresses.append({
                 "iface": adapter,
@@ -197,13 +206,6 @@ net_api = web.Application()
 net_api.add_routes([
     web.get("/api/netusage", net_usage)
 ])
-
-async def start_site(app: Application, host: str = 'localhost', port: int = 8080):
-    runner = web.AppRunner(app)
-    runners.append(runner)
-    await runner.setup()
-    site = web.TCPSite(runner, host, port)
-    await site.start()
 
 cors = aiohttp_cors.setup(net_api, defaults={
     "*": aiohttp_cors.ResourceOptions(

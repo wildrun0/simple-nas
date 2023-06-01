@@ -7,9 +7,10 @@
 	grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
 	gap: 50px;
 }
-
-.dashboard-main>div {
-	background-color: #262B49;
+.pcdata-ram {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 }
 
 .no-data {
