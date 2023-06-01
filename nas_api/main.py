@@ -150,7 +150,7 @@ async def scan_cpu_load():
             "usage": cpu_usage
         }
         with open("cpu_stat.txt", "a") as f:
-            f.write(data)
+            f.write(json.dumps(data))
         asyncio.sleep(600)
 
 
