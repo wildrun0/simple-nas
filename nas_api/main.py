@@ -142,7 +142,7 @@ async def disks(req: BaseRequest):
 
 async def scan_cpu_load():
     while 1:
-        cpu_usage = await run(""" echo "$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]" """)
+        cpu_usage = await run("echo \"$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]\"")
         cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
         data = {
             "time": round(time.time()),
