@@ -21,8 +21,8 @@ export default async function Home() {
 				<RamInfo />
 			</div>
 			<div className='dashboard-pc'>
-				<CpuLoadInfo cpu_data={cpu_data} />
-				<NetworkMonitor network_info={network_info} />
+				<CpuLoadInfo period={60} />
+				<NetworkMonitor network_info={network_info} period={45} />
 			</div>
 			<div className='dashboard-disks'>
 				<VolumeUsagePie volume_data={volume_data} />

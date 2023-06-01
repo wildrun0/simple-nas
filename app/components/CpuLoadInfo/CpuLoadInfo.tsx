@@ -1,13 +1,24 @@
 "use client"
 import "./CpuLoadInfo.css";
+import { cpu_data } from "@/app/api/cpudata/route";
+import { useEffect, useState } from "react"
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
-interface cpu_data {
-	time: string;
-	temp: number;
-	load: number;
-}
-const CpuLoadInfo = ({ cpu_data }: { cpu_data: cpu_data[] }) => {
+
+const CpuLoadInfo = ({ period }: { period: number }) => {
+	const [cpu_data, add_cpu_data] = useState<cpu_data[]>([]);
+	useEffect(() => {
+		async function get_load(url: string) {
+			const resp = await fetch(url, { cache: "no-store" });
+			let data: cpu_data = await resp.json();
+			add_cpu_data(result => [...result.slice(-period), {
+				time: data.time,
+				temp: data.temp,
+				load: data.load
+			}]);
+		}
+		get_load("/api/cpudata");
+	})
 	return (
 		<div className='dashboard-cpu'>
 			<h2>CPU</h2>

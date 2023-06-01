@@ -5,6 +5,7 @@ from aiohttp_sse import sse_response
 from loguru import logger
 from _getip import get_local_ip
 
+import time
 import aiohttp_cors
 import psutil as ps
 import asyncio
@@ -105,7 +106,8 @@ async def network(req: BaseRequest):
         for iface_line in interfaces_splitted:
             iface_data = [s for s in iface_line.split(" ") if not s == ""]
             adapter, is_up, ip = iface_data
-            if adapter == 'lo': continue
+            if adapter == 'lo':
+                continue
             ip = ip.split("/")[0]
             ip_addresses.append({
                 "iface": adapter,
@@ -138,19 +140,28 @@ async def disks(req: BaseRequest):
     return web.json_response(drives_usage)
 
 
+async def scan_cpu_load():
+    while 1:
+        cpu_usage = await run(""" echo "$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]" """)
+        cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
+        data = {
+            "time": round(time.time()),
+            "temp": cpu_temp,
+            "usage": cpu_usage
+        }
+        with open("cpu_stat.txt", "a") as f:
+            f.write(data)
+        asyncio.sleep(600)
+
+
 async def cpu_data(req: BaseRequest):
-    # data = [{ "time": string, "temp": number, "load": number }];
-    data = []
-    import random
-    from datetime import datetime, timedelta
-    naive_dt = datetime.now()
-    for i in range(0, 30):
-        data.append({"time": naive_dt.strftime("%H:%M"), "temp": random.randint(
-            50, 99), "load": random.randint(0, 100)})
-        new_dt = timedelta(minutes=30)
-        naive_dt = naive_dt + new_dt
-    logger.debug("cpu data sent")
-    return web.json_response(data)
+    if os_type != "Windows":
+        cpu_usage = await run(""" echo "$[100-$(vmstat 1 2|tail -1|awk '{print $15}')]" """)
+        cpu_temp = int(await run("cat /sys/class/thermal/thermal_zone0/temp"))/1000
+    else:
+        cpu_usage = 47
+        cpu_temp = 55
+    return web.json_response({"temp": cpu_temp, "usage": cpu_usage})
 
 
 async def auth(req: BaseRequest):
@@ -220,6 +231,7 @@ for route in list(net_api.router.routes()):
 
 loop.create_task(start_site(app, port=3333))
 loop.create_task(start_site(net_api, host=get_local_ip(), port=2222))
+loop.create_task(scan_cpu_load())
 
 if __name__ == '__main__':
     logger.info(f"Starting runners")

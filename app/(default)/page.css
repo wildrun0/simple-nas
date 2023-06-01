@@ -22,6 +22,7 @@
 .dashboard-disks {
 	display: flex;
 	flex-direction: column;
+	background-color: #262B49;
 }
 
 .dashboard-pc {
