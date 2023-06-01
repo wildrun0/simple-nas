@@ -150,7 +150,7 @@ async def scan_cpu_load():
                 "temp": round(cpu_temp, 1),
                 "usage": cpu_usage
             }
-            with open("cpu_stat.txt", "r+") as f:
+            with open("cpu_stat.txt", "w+") as f:
                 cpu_info = json.loads(f.read())
                 cpu_info.append(data)
                 f.seek(0)
