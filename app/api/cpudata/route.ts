@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export interface cpu_data {
-	time: string;
+	time: number;
 	temp: number;
 	usage: number;
 }

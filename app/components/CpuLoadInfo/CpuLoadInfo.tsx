@@ -11,13 +11,12 @@ const CpuLoadInfo = () => {
 		async function get_load(url: string) {
 			const resp = await fetch(url, { cache: "no-store" });
 			let data: cpu_data[] = await resp.json();
-			data.map((_entry: cpu_data)=>{
-				let date = new Date(_entry.time);
-				let hoursAndMinutes = date.getHours() + ':' + date.getMinutes();
+			data.map((_entry: any) => {
+				let date = new Date(_entry.time * 1000);
+				let hoursAndMinutes = date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
 				_entry.time = hoursAndMinutes;
 			})
 			add_cpu_data(data);
-			console.log(cpu_info)
 		}
 		get_load("/api/cpudata");
 		let interval = setInterval(() => get_load("/api/cpudata"), 200000);
@@ -33,7 +32,7 @@ const CpuLoadInfo = () => {
 					<LineChart data={cpu_info}>
 						<Line dot={false} type="monotone" dataKey="temp" stroke="#FF3131" />
 						<Line dot={false} type="monotone" dataKey="usage" stroke="#50C878" />
-						<XAxis dataKey="time" padding={{ right: 10 }}/>
+						<XAxis dataKey="time" padding={{ right: 10 }} />
 						<YAxis type="number" domain={[0, 100]} interval={0} padding={{ top: 10 }} />
 						<Tooltip contentStyle={{ backgroundColor: "#1c2137", border: "none" }} />
 						<Legend align='right' layout='vertical' verticalAlign='top' />

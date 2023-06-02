@@ -150,8 +150,11 @@ async def scan_cpu_load():
                 "temp": round(cpu_temp, 1),
                 "usage": cpu_usage
             }
-            with open("cpu_stat.txt", "w+") as f:
-                cpu_info = json.loads(f.read())
+            with open("cpu_stat.txt", "r+") as f:
+                try:
+                    cpu_info = json.loads(f.read())
+                except json.decoder.JSONDecodeError:
+                    cpu_info = []
                 cpu_info.append(data)
                 f.seek(0)
                 f.truncate(0)
