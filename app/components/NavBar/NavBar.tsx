@@ -4,7 +4,7 @@ import { ImDrive, ImBlocked } from "react-icons/im";
 import { TbHeartRateMonitor } from "react-icons/tb";
 import { AiFillFileText, AiFillDashboard } from "react-icons/ai";
 import Link from "next/link";
-import logo from "../../logo.svg"
+import logo from "@/public/logo.svg";
 import Image from "next/image";
 
 

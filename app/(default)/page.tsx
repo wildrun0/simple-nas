@@ -22,7 +22,7 @@ export default async function Home() {
 			</div>
 			<div className='dashboard-pc'>
 				<CpuLoadInfo />
-				<NetworkMonitor network_info={network_info} period={45} />
+				<NetworkMonitor network_info={network_info} period={25} />
 			</div>
 			<div className='dashboard-disks'>
 				<VolumeUsagePie volume_data={volume_data} />

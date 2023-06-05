@@ -19,10 +19,15 @@
 	align-items: center;
 	gap: 10px;
 }
+.dashboard-disks-usage {
+	height: 100%;
+	overflow-y: auto;
+}
 
 @media screen and (max-width: 2015px) {
 	.dashboard-disks-usage {
-		width: 100%;
-		margin-top: 50px;
+		width: 65%;
+		margin: auto;
+		height: 65%;
 	}
 }

@@ -21,6 +21,7 @@
 
 .dashboard-disks {
 	display: flex;
+	height: 90vh;
 	flex-direction: column;
 	background-color: #262B49;
 }
@@ -36,6 +37,7 @@
 	.dashboard-disks {
 		grid-column: span 2;
 		flex-direction: row;
+		height: 60vh;
 	}
 }
 

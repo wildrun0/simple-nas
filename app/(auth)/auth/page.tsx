@@ -1,6 +1,6 @@
 "use client"
 import "./auth.css"
-import logo from "../../logo.svg"
+import logo from "@/public/logo.svg"
 import Image from "next/image";
 
 import { Poppins } from 'next/font/google'
@@ -33,13 +33,13 @@ const submitAuth = async (event: any, router: AppRouterInstance, setErr: any) =>
 	if (result.auth) {
 		router.back();
 	} else {
-		setErr(true);
+		setErr("Username or password is incorrect");
 	}
 };
 
 export default function Auth() {
 	const router = useRouter();
-	const [err, setErr] = useState(false);
+	const [err, setErr] = useState("");
 	return (
 		<div className={poppins.className}>
 			<div className="auth">
@@ -49,9 +49,9 @@ export default function Auth() {
 						<h3><span>Welcome Back</span></h3>
 						<p>Enter your credentials to access your account.</p>
 					</div>
-					<div style={{height: "30px"}}>
+					<div style={{ height: "30px" }}>
 						{err &&
-							<p className="auth-err">Username or password is incorrect.</p>
+							<p className="auth-err">{err}</p>
 						}
 					</div>
 					<form className="auth-form" onSubmit={(e) => submitAuth(e, router, setErr)}>
